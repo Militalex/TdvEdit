@@ -1,0 +1,20 @@
+name: TdvEdit
+version: ${project.version}
+main: de.militaermiltz.tdv.TdvEdit
+api-version: 1.16
+authors: [ MilitaerMilitz ]
+description: This plugin adds Commands to the game helping build tdv music.
+depend:
+  - NBTAPI
+
+commands:
+  modifyplaysound:
+    description: Modifies playsound command arguments.
+    usage: Right usage -> /modifyplaysound <from> <to> <argument filter (-sound, -volume, ...) > <new Value> <optional -> world>
+    permission: tdvEdit.modifyPlaysound
+    permission-message: You don't have the permission to do that.
+  commandprepend:
+    desciption: Prepends a String in cmd-Blocks.
+    usage: Right usage -> /commandprepend <from> <to> <prepend String in ""> <optional -> cmd filter (playsound, particle, fill, ...) >
+    permission: tdvEdit.commandPrepend
+    permission-message: You don't have the permission to do that.
