@@ -1,7 +1,6 @@
 package de.militaermiltz.tdv.commands;
 
 import com.sun.istack.internal.Nullable;
-import de.militaermiltz.tdv.TdvEdit;
 import de.militaermiltz.tdv.util.NumberUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -111,7 +110,7 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
                             }
 
                             //Sets new command to command Block.
-                            CommandUtil.setCommandInCommandBlock(block, builder.toString());
+                            CommandUtil.setCMDinBlock(block, builder.toString());
                             modified++;
                         }
                     }

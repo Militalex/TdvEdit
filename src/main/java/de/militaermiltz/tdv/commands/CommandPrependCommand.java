@@ -1,6 +1,5 @@
 package de.militaermiltz.tdv.commands;
 
-import de.militaermiltz.tdv.TdvEdit;
 import de.militaermiltz.tdv.util.NumberUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -68,7 +67,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                                 //Prepends the arg String without "
                                 cmd = args[6].substring(1, args[6].length() - 1) + " " + cmd;
 
-                                CommandUtil.setCommandInCommandBlock(block, cmd);
+                                CommandUtil.setCMDinBlock(block, cmd);
                                 modified++;
                             }
                         }
@@ -76,7 +75,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                             //Prepends the arg String without "
                             cmd = args[6].substring(1, args[6].length() - 1) + " " + cmd;
 
-                            CommandUtil.setCommandInCommandBlock(block, cmd);
+                            CommandUtil.setCMDinBlock(block, cmd);
                             modified++;
                         }
                     }

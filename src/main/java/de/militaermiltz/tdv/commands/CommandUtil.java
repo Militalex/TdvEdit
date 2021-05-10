@@ -66,7 +66,7 @@ public class CommandUtil {
     /**
      * Changes command in command Block.
      */
-    public static void setCommandInCommandBlock(Block commandBlock, String newCommand){
+    public static void setCMDinBlock(Block commandBlock, String newCommand){
         if (!(commandBlock.getState() instanceof CommandBlock)) throw new IllegalArgumentException(commandBlock + " is not an Command Block");
 
         NBTTileEntity nbtTileEntity = new NBTTileEntity(commandBlock.getState());
