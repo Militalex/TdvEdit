@@ -34,7 +34,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
 
         //Combined String args
         final String prependString = getPrependString(commandString);
-        final String filter = getFilter(commandString);
+        String filter = getFilter(commandString);
 
         final World world = CommandUtil.getWorldFromSender(sender);
         final Location[] fromTo = CommandUtil.transformLocation(new Location(world, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2])),
@@ -57,7 +57,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                             cmd = cmd.replaceFirst("/", "");
                         }
 
-                        if (!filter.equals("")){
+                        if (filter.equals("")){
                             //Prepends the arg String without "
                             cmd = prependString.substring(1, prependString.length() - 1) + " " + cmd;
 
@@ -75,7 +75,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                         }
 
                         //Length is 8 when command filter is applied
-                        if (args.length == 8) {
+                        /*if (args.length == 8) {
                             String argument = args[7];
 
                             //Remove "/"
@@ -98,7 +98,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
 
                             CommandUtil.setCMDinBlock(block, cmd);
                             modified++;
-                        }
+                        }*/
                     }
                 }
             }
@@ -118,7 +118,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
        if (!command.matches("/commandprepend (-?(\\d)+ ){6}([\"][\\D|\\d]*[\"]) [\\D\\d]+")){
            return false;
        }
-       return CommandUtil.COMMANDS.contains(command.replaceAll("/commandprepend (-?(\\d)+ ){6}([\"][\\D|\\d]*[\"]) [\\D\\d]+", ""));
+       return CommandUtil.COMMANDS.contains(command.replaceAll("/commandprepend (-?(\\d)+ ){6}([\"][\\D|\\d]*[\"]) ", ""));
     }
 
     @Override
@@ -189,7 +189,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
 
     private String getFilter(String command){
         return command
-                .replaceAll("/commandprepend (-?(\\d)+ ){6}([\"][\\D|\\d]*[\"])\\s?", "")
+                .replaceAll("/commandprepend (-?(\\d)+ ){6}([\"][\\D|\\d]*[\"])[ ]?", "")
                 .replaceFirst("/", "");
     }
 }
