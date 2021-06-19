@@ -75,7 +75,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                         }
 
                         //Length is 8 when command filter is applied
-                        /*if (args.length == 8) {
+                        if (args.length == 8) {
                             String argument = args[7];
 
                             //Remove "/"
@@ -88,7 +88,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                                 //Prepends the arg String without "
                                 cmd = args[6].substring(1, args[6].length() - 1) + " " + cmd;
 
-                                CommandUtil.setCommandInCommandBlock(block, cmd);
+                                CommandUtil.setCMDinBlock(block, cmd);
                                 modified++;
                             }
                         }
@@ -96,9 +96,9 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                             //Prepends the arg String without "
                             cmd = args[6].substring(1, args[6].length() - 1) + " " + cmd;
 
-                            CommandUtil.setCommandInCommandBlock(block, cmd);
+                            CommandUtil.setCMDinBlock(block, cmd);
                             modified++;
-                        }*/
+                        }
                     }
                 }
             }
