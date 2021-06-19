@@ -18,3 +18,8 @@ commands:
     usage: Right usage -> /commandprepend <from> <to> <prepend String in ""> <optional -> cmd filter (playsound, particle, fill, ...) >
     permission: tdvEdit.commandPrepend
     permission-message: You don't have the permission to do that.
+  crescendo:
+    desciption: Generate in playsound commands a crescendo.
+    usage: Right usage -> /crescendo <from x, y, z> <to x, z> <Direction> <min> <max>
+    permission: tdvEdit.crescendo
+    permission-message: You don't have the permission to do that.

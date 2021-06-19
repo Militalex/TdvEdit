@@ -1,7 +1,7 @@
 package de.militaermiltz.tdv.commands;
 
 import de.militaermiltz.tdv.TdvEdit;
-import de.militaermiltz.tdv.util.NumberUtil;
+import de.militaermiltz.tdv.util.RegexUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -9,11 +9,11 @@ import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -26,14 +26,17 @@ import java.util.stream.Collectors;
 public class CommandPrependCommand implements CommandExecutor, TabCompleter {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        //Combine String args
-        args = fusionPrependArgs(args);
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        final String commandString = CommandUtil.getCommand(label, args);
 
-        if (!isComplete(args)) return false;
         if (sender instanceof ConsoleCommandSender) sender.sendMessage("This command is only usable by players or command blocks.");
+        if (!isComplete(commandString)) return false;
 
-        final World world = CommandUtil.getWorldFromSender(sender, args);
+        //Combined String args
+        final String prependString = getPrependString(commandString);
+        final String filter = getFilter(commandString);
+
+        final World world = CommandUtil.getWorldFromSender(sender);
         final Location[] fromTo = CommandUtil.transformLocation(new Location(world, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2])),
                                                                 new Location(world, Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5])));
 
@@ -54,8 +57,25 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                             cmd = cmd.replaceFirst("/", "");
                         }
 
+                        if (!filter.equals("")){
+                            //Prepends the arg String without "
+                            cmd = prependString.substring(1, prependString.length() - 1) + " " + cmd;
+
+                            CommandUtil.setCMDinBlock(block, cmd);
+                            modified++;
+                        }
+                        else {
+                            if (cmd.split(" ")[0].equals(filter)) {
+                                //Prepends the arg String without "
+                                cmd = prependString.substring(1, prependString.length() - 1) + " " + cmd;
+
+                                CommandUtil.setCMDinBlock(block, cmd);
+                                modified++;
+                            }
+                        }
+
                         //Length is 8 when command filter is applied
-                        if (args.length == 8) {
+                        /*if (args.length == 8) {
                             String argument = args[7];
 
                             //Remove "/"
@@ -78,7 +98,7 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
 
                             CommandUtil.setCommandInCommandBlock(block, cmd);
                             modified++;
-                        }
+                        }*/
                     }
                 }
             }
@@ -92,44 +112,52 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
     /**
      * Checks if all components of the command are available to execute.
      */
-    private boolean isComplete(String[] args){
-        if (args.length < 7 || args.length > 8) return false;
+    private boolean isComplete(String command){
+        if (command.matches("/commandprepend (-?(\\d)+ ){6}([\"][\\D|\\d]*[\"])")) return true;
 
-        for (int i = 0; i < args.length; i++){
-            final String argument = args[i];
-
-            switch (i){
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                    if (!NumberUtil.isInteger(argument)) return false;
-                    break;
-                case 6:
-                    if (argument.charAt(0) != '\"' || argument.charAt(argument.length() - 1) != '\"') return false;
-                    break;
-                case 7:
-                    if (!CommandUtil.COMMANDS.contains(argument)) return false;
-                    break;
-            }
-        }
-        return true;
+       if (!command.matches("/commandprepend (-?(\\d)+ ){6}([\"][\\D|\\d]*[\"]) [\\D\\d]+")){
+           return false;
+       }
+       return CommandUtil.COMMANDS.contains(command.replaceAll("/commandprepend (-?(\\d)+ ){6}([\"][\\D|\\d]*[\"]) [\\D\\d]+", ""));
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        List<String> list = new ArrayList<>();
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        if (sender instanceof ConsoleCommandSender) return Collections.emptyList();
 
-        Location playerLookLocation = null;
+        final List<String> list = new ArrayList<>();
+        final String cmdS = CommandUtil.getCommand(alias, args);
 
-        if (args.length <= 6 && sender instanceof Player)
-            playerLookLocation = CommandUtil.getPlayerLookBlockPos((Player) sender);
+        if (cmdS.matches("/commandprepend ")
+                || cmdS.matches("/commandprepend (-?(\\d)+ ){3}")){
+            final Location playerLookLocation = CommandUtil.getPlayerLookBlockPos((Player) sender);
+            list.add(""+ playerLookLocation.getBlockX());
+            return list;
+        }
+        else if (cmdS.matches("/commandprepend (-?(\\d)+ ){1}")
+                || cmdS.matches("/commandprepend (-?(\\d)+ ){4}")){
+            final Location playerLookLocation = CommandUtil.getPlayerLookBlockPos((Player) sender);
+            list.add(""+ playerLookLocation.getBlockY());
+            return list;
+        }
+        else if (cmdS.matches("/commandprepend (-?(\\d)+ ){2}")
+                || cmdS.matches("/commandprepend (-?(\\d)+ ){5}")){
+            final Location playerLookLocation = CommandUtil.getPlayerLookBlockPos((Player) sender);
+            list.add(""+ playerLookLocation.getBlockZ());
+            return list;
+        }
+        else if (cmdS.matches("/commandprepend (-?(\\d)+ ){6}")){
+            list.add("\"\"");
+            return list;
+        }
+        else if (cmdS.matches("/commandprepend (-?(\\d)+ ){6}([\"][\\D|\\d]*[\"]) ([^ |0-9]|[\\d])+")){
+            list.addAll(CommandUtil.COMMANDS);
+            return list;
+        }
+        else return Collections.emptyList();
 
-        args = fusionPrependArgs(args);
 
-        switch (args.length) {
+        /*switch (args.length) {
             case 1:
             case 4:
                 list.add("" + ((playerLookLocation != null) ? playerLookLocation.getBlockX() : 0));
@@ -149,52 +177,19 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                 list.addAll(CommandUtil.COMMANDS);
                 break;
         }
-        return list;
+        return list;*/
     }
 
     /**
      * Combines the String args to one argument.
      */
-    private String[] fusionPrependArgs(String[] args){
-        //Conditions to skip fusion
-        if (args.length < 7 || args[6].equals("") || args[6].charAt(0) != '\"' || (args[6].charAt(0) == '\"' && args[6].charAt(args[6].length() - 1) == '\"')) return args;
+    private String getPrependString(String command){
+        return RegexUtil.getMatches("[\"][\\D|\\d]*[\"]", command).get(0);
+    }
 
-        //Arglist
-        final List<String> list = new ArrayList<>(Arrays.asList(args).subList(6, args.length));
-        final StringBuilder builder = new StringBuilder("");
-
-
-        for (int i = 0 ; i < list.size(); i++) {
-            final String arg = list.get(i);
-
-            //Append always first
-            if (i == 0) {
-                builder.append(arg);
-            }
-            else{
-                builder.append(" ").append(arg);
-
-                try{
-                    //Check if next arg have to append and break if not
-                    final String nextArg = list.get(i + 1);
-                    if (CommandUtil.COMMANDS.contains(nextArg) || nextArg.equals("")) {
-                        break;
-                    }
-                }
-                catch (IndexOutOfBoundsException ignored){ }
-            }
-        }
-
-        //Replace old arg to fusion arg
-        args[6] = builder.toString();
-
-        final List<String> argList = Arrays.stream(args).collect(Collectors.toList());
-
-        //Remove args between 6 and end or filter arg
-        for (int j = 7; j < argList.size() && !argList.get(j).equals("") && !CommandUtil.COMMANDS.contains(argList.get(j)); ){
-            argList.remove(j);
-        }
-
-        return argList.toArray(new String[0]);
+    private String getFilter(String command){
+        return command
+                .replaceAll("/commandprepend (-?(\\d)+ ){6}([\"][\\D|\\d]*[\"])\\s?", "")
+                .replaceFirst("/", "");
     }
 }

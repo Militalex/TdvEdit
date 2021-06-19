@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -26,10 +27,10 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
     public static final List<String> FILTER = new ArrayList<>();
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!isComplete(sender, args)) return false;
 
-        final World world = (args.length == 9) ? Bukkit.getServer().getWorld(args[8]) : CommandUtil.getWorldFromSender(sender, args);
+        final World world = (args.length == 9) ? Bukkit.getServer().getWorld(args[8]) : CommandUtil.getWorldFromSender(sender);
         final Location[] fromTo = CommandUtil.transformLocation(new Location(world, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2])),
                                                     new Location(world, Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5])));
 
@@ -100,7 +101,7 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
 
                             StringBuilder builder = new StringBuilder();
                             //Prepend execute command
-                            builder.append(executePrepend.toString());
+                            builder.append(executePrepend);
                             //Puts "/" back to the front
                             if (haveSlash) builder.append("/");
 
@@ -111,7 +112,7 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
                             }
 
                             //Sets new command to command Block.
-                            CommandUtil.setCommandInCommandBlock(block, builder.toString());
+                            CommandUtil.setCMDinBlock(block, builder.toString());
                             modified++;
                         }
                     }
@@ -125,7 +126,7 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         List<String> list = new ArrayList<>();
 
         Location playerLookLocation = null;
