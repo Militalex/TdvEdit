@@ -1,8 +1,6 @@
 package de.militaermiltz.tdv.util;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,7 +10,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -190,7 +187,7 @@ public final class FileUtil {
             return Files.readAllLines(path).isEmpty();
         }
         catch (IOException ioException) {
-            throw new IllegalArgumentException("Something went wrong with: " + path.toString(), ioException);
+            throw new IllegalArgumentException("Something went wrong with: " + path, ioException);
         }
     }
 

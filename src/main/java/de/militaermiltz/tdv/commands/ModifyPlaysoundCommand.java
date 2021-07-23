@@ -1,6 +1,5 @@
 package de.militaermiltz.tdv.commands;
 
-import com.sun.istack.internal.Nullable;
 import de.militaermiltz.tdv.util.NumberUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -8,6 +7,7 @@ import org.bukkit.block.CommandBlock;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -300,7 +300,8 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
         /**
          * @return Returns PlaysoundArgument from String. If no PlaysoundArgument is found it return null.
          */
-        public static @Nullable PlaysoundArguments getFromString(String str){
+        public static @Nullable
+        PlaysoundArguments getFromString(String str){
             final List<PlaysoundArguments> list = Arrays.stream(values())
                     .filter(playsoundArguments -> playsoundArguments.isInAlias(str))
                     .collect(Collectors.toList());

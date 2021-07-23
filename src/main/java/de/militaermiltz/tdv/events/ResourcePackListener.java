@@ -23,15 +23,12 @@ import java.util.Scanner;
  * @author Alexander Ley
  * @version 1.0
  *
- * This class defines Resourcepack Messages when player joins the world.
+ * This class defines ResourcePack Messages when player joins the world.
  *
  */
-public class ResourcepackListener implements Listener {
+public class ResourcePackListener implements Listener {
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
-
+    public static void showMessage(Player player){
         //Check if pack.txt exists.
         final Path pack = Paths.get("plugins/TdvEdit/pack.txt");
         FileUtil.createIfNotExists(pack);
@@ -121,10 +118,10 @@ public class ResourcepackListener implements Listener {
     }
 
     /**
-     * Extracts server resourcepack information from server.properties
-     * @throws IOException
+     * Extracts server resourcePack information from server.properties
+     * @throws IOException if an I/O error occurs opening source.
      */
-    private String[] getPackFromServerProperties() throws IOException {
+    private static String[] getPackFromServerProperties() throws IOException {
         final Path path = Paths.get("server.properties");
         final String[] packInfo = new String[2];
         final Scanner sc = new Scanner(path);
@@ -142,5 +139,11 @@ public class ResourcepackListener implements Listener {
         }
 
         return packInfo;
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        showMessage(player);
     }
 }

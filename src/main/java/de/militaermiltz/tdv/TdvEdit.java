@@ -1,9 +1,7 @@
 package de.militaermiltz.tdv;
 
-import de.militaermiltz.tdv.commands.CommandPrependCommand;
-import de.militaermiltz.tdv.commands.CrescendoCommand;
-import de.militaermiltz.tdv.commands.ModifyPlaysoundCommand;
-import de.militaermiltz.tdv.events.ResourcepackListener;
+import de.militaermiltz.tdv.commands.*;
+import de.militaermiltz.tdv.events.ResourcePackListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Files;
@@ -31,9 +29,11 @@ public final class TdvEdit extends JavaPlugin {
         Objects.requireNonNull(getCommand("modifyplaysound")).setExecutor(new ModifyPlaysoundCommand());
         Objects.requireNonNull(getCommand("commandprepend")).setExecutor(new CommandPrependCommand());
         Objects.requireNonNull(getCommand("crescendo")).setExecutor(new CrescendoCommand());
+        Objects.requireNonNull(getCommand("resourcepack")).setExecutor(new ResourcePackCommand());
+        Objects.requireNonNull(getCommand("givenote")).setExecutor(new GiveNoteCommand());
 
         //Events
-        if (resources) getServer().getPluginManager().registerEvents(new ResourcepackListener(), this);
+        if (resources) getServer().getPluginManager().registerEvents(new ResourcePackListener(), this);
 
         this.getLogger().info("--------- TdvEdit successfully enabled. ---------");
     }

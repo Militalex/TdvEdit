@@ -1,6 +1,5 @@
 package de.militaermiltz.tdv.commands;
 
-import com.sun.istack.internal.NotNull;
 import de.tr7zw.nbtapi.NBTTileEntity;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -10,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

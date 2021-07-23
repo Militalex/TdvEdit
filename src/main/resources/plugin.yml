@@ -23,3 +23,13 @@ commands:
     usage: Right usage -> /crescendo <from x, y, z> <to x, z> <Direction> <min> <max>
     permission: tdvEdit.crescendo
     permission-message: You don't have the permission to do that.
+  resourcepack:
+    description: Shows Resourcepack Information.
+    usgae: /resourcepack
+    permission: tdvEdit.resourcepack
+    permission-message: You don't have the permission to do that.
+  givenote:
+    description: Gives player an octave higher Block.
+    usage: Right usage -> /givenote <note, next, second, third, ..., octave> <note as letter or noteblocks click> <optional -> standard noteblock, when used -> noteblock (nb), commandblock (cb) or repeatingCommandblock (rcb)> <if cb/rcb -> choose instrument block> <optional if cb/rcb -> standard 1.0, when used -> volume as double>
+    permission: tdvEdit.givenote
+    permission-message: You don't have the permission to do that.
