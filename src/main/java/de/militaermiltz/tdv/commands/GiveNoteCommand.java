@@ -3,7 +3,6 @@ package de.militaermiltz.tdv.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.*;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,21 +25,20 @@ public class GiveNoteCommand implements CommandExecutor, TabCompleter {
         }
 
         try {
-            final int step = getStepFromInterval(args[0]);
-            final int noteClick = getClickFromNote(args[1]) + step;
+            final int noteClick = getClickFromNote(args[0]);
 
             if (noteClick > 24) {
                 sender.sendMessage(ChatColor.RED + "" + noteClick + " is not valid for noteblocks/playsound.");
                 return true;
             }
 
-            if (args.length == 2 || args[2].equals("nb")){
+            if (args.length == 1 || args[1].equals("nb")){
                 Bukkit.getServer().dispatchCommand(sender, "give @s note_block{BlockStateTag:{note:\"" + noteClick +"\"}}");
             }
             else{
-                final String block = (args[2].equals("cb")) ? "command_block" : "repeating_command_block";
-                final String instrument = getInstrumentFromBlock(args[3]);
-                final double volume = (args.length == 4) ? 1.0 : Double.parseDouble(args[4]);
+                final String block = (args[1].equals("cb")) ? "command_block" : "repeating_command_block";
+                final String instrument = getInstrumentFromBlock(args[2]);
+                final double volume = (args.length == 3) ? 1.0 : Double.parseDouble(args[3]);
 
                 Bukkit.getServer().dispatchCommand(sender, "give @s " + block +
                         "{BlockEntityTag:{Command:\"/playsound minecraft:block.note_block." + instrument +
@@ -62,33 +60,29 @@ public class GiveNoteCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 1){
-            return Stream.of("note", "next", "second", "third", "fourth", "fifth", "sixth", "seventh", "octave")
-                    .filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
-        }
-        else if (args.length == 2){
             return Stream.of("F1#", "G1b", "G1", "G1#", "A1b", "A1", "A1#", "B1", "H1", "C1", "C1#", "D1b",
                              "D1", "D1#", "E1b", "F2", "F2#", "G2b", "G2", "G2#", "A2b", "A2", "A2#", "B2", "H2",
                              "C2", "C2#", "D2b", "D2", "D2#", "E2b", "E2", "F3", "F3#", "G3b",
                              "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
                              "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"
-            ).filter(s -> s.contains(args[1])).collect(Collectors.toList());
+            ).filter(s -> s.contains(args[0])).collect(Collectors.toList());
         }
-        else if (args.length == 3){
+        else if (args.length == 2){
             return Arrays.asList("nb", "cb", "rcb");
         }
-        else if (args.length == 4 && (args[2].equals("cb") || args[2].equals("rcb"))){
+        else if (args.length == 3 && (args[1].equals("cb") || args[1].equals("rcb"))){
             return Stream.of("Wood", "Sand", "Glass", "Stone", "Gold", "Clay", "PackedIce", "Wool",
                              "BoneBlock", "Iron", "SoulSand", "Pumpkin", "Emerald", "Hay", "Glowstone", "Air"
-            ).filter(s -> s.startsWith(args[3])).collect(Collectors.toList());
+            ).filter(s -> s.startsWith(args[2])).collect(Collectors.toList());
         }
-        else if (args.length == 5 && (args[2].equals("cb") || args[2].equals("rcb"))){
+        else if (args.length == 4 && (args[1].equals("cb") || args[1].equals("rcb"))){
             return Collections.singletonList("1.0");
         }
         else return Collections.emptyList();
     }
 
     private boolean isCorrect(String command){
-        return command.matches("/givenote (note|next|second|third|fourth|fifth|sixth|seventh|octave) (([0-9]|(1[0-9])|(2[0-4]))|([A-H][1-2][#b]?)|(F3|F3#|G3b))( (nb|((cb|rcb) (Wood|Sand|Glass|Stone|Gold|Clay|PackedIce|Wool|BoneBlock|Iron|SoulSand|Pumpkin|Emerald|Hay|Glowstone|Air)( ([0-9]+.[0-9]+))?)))?");
+        return command.matches("/givenote (([0-9]|(1[0-9])|(2[0-4]))|([A-H][1-2][#b]?)|(F3|F3#|G3b))( (nb|((cb|rcb) (Wood|Sand|Glass|Stone|Gold|Clay|PackedIce|Wool|BoneBlock|Iron|SoulSand|Pumpkin|Emerald|Hay|Glowstone|Air)( ([0-9]+.[0-9]+))?)))?");
     }
 
     private double getPitchFromClicks(int clicks){
@@ -162,7 +156,7 @@ public class GiveNoteCommand implements CommandExecutor, TabCompleter {
     private int getClickFromNote(String note){
         return switch (note) {
             case "F1#", "G1b", "0" -> 0;
-            case "G", "1" -> 1;
+            case "G1", "1" -> 1;
             case "G1#", "A1b", "2" -> 2;
             case "A1", "3" -> 3;
             case "A1#", "B1", "4" -> 4;
