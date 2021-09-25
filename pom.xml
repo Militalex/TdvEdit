@@ -6,7 +6,7 @@
 
     <groupId>de.militaermiltz.tdv</groupId>
     <artifactId>tdvEdit</artifactId>
-    <version>1.11-BETA</version>
+    <version>1.13-BETA</version>
     <packaging>jar</packaging>
 
     <name>TdvEdit</name>
