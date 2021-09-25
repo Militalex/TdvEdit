@@ -2,11 +2,18 @@ package de.militaermiltz.tdv;
 
 import de.militaermiltz.tdv.commands.*;
 import de.militaermiltz.tdv.events.ResourcePackListener;
+import de.militaermiltz.tdv.util.ServerPropertiesManager;
+import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTCompoundList;
+import de.tr7zw.nbtapi.NBTFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.logging.Level;
 
 /**
  *
@@ -18,11 +25,21 @@ import java.util.Objects;
  */
 public final class TdvEdit extends JavaPlugin {
 
+    public static TdvEdit PLUGIN;
+    public static ServerPropertiesManager propertiesManager;
+
     @Override
     public void onEnable() {
         //Save Default Config File if not existing
         if (!Files.exists(Paths.get("plugins/TdvEdit/config.yml"))) this.saveDefaultConfig();
+        try {
+            propertiesManager = new ServerPropertiesManager();
+        }
+        catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Cannot load config.");
+        }
 
+        PLUGIN = this;
         final boolean resources = this.getConfig().getBoolean("resourcepack");
 
         //Commands
