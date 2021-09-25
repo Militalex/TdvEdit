@@ -246,7 +246,7 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
     }
 
 
-    private enum PlaysoundArguments {
+    public enum PlaysoundArguments {
         SOUND(1, Arrays.stream(Sound.values())
                       .map(sound -> sound.getKey().toString())
                       .collect(Collectors.toList()),
