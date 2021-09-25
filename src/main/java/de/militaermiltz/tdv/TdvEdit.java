@@ -31,6 +31,7 @@ public final class TdvEdit extends JavaPlugin {
         Objects.requireNonNull(getCommand("crescendo")).setExecutor(new CrescendoCommand());
         Objects.requireNonNull(getCommand("resourcepack")).setExecutor(new ResourcePackCommand());
         Objects.requireNonNull(getCommand("givenote")).setExecutor(new GiveNoteCommand());
+        Objects.requireNonNull(getCommand("calibratemusic")).setExecutor(new CalibrationCommand());
 
         //Events
         if (resources) getServer().getPluginManager().registerEvents(new ResourcePackListener(), this);
