@@ -1,6 +1,5 @@
 package de.militaermiltz.tdv.commands;
 
-import de.militaermiltz.tdv.TdvEdit;
 import de.militaermiltz.tdv.util.RegexUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
