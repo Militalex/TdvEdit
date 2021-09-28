@@ -36,9 +36,18 @@ public class CalibrationCommand implements CommandExecutor, TabCompleter {
             return false;
         }
         //Command arguments
-        final int x = Integer.parseInt(args[0]);
-        final int y = Integer.parseInt(args[1]);
-        final int z = Integer.parseInt(args[2]);
+        final double x;
+        final double y;
+        final double z;
+        try {
+            x = Double.parseDouble(args[0]);
+            y = Double.parseDouble(args[1]);
+            z = Double.parseDouble(args[2]);
+        }
+        catch (NumberFormatException nex){
+            sender.sendMessage(ChatColor.RED + "Please enter a valid double.");
+            return true;
+        }
         final String musikPatternStart = args[3];
 
         //Structure Files
@@ -121,17 +130,17 @@ public class CalibrationCommand implements CommandExecutor, TabCompleter {
 
         if (cmdS.matches("/calibratemusic ")){
             final Location playerLookLocation = CommandUtil.getPlayerLookBlockPos((Player) sender);
-            list.add(""+ playerLookLocation.getBlockX());
+            list.add(""+ playerLookLocation.getX());
             return list;
         }
-        else if (cmdS.matches("/calibratemusic (-?(\\d)+ ){1}")){
+        else if (cmdS.matches("/calibratemusic (-?(\\d)+(.\\d+)? ){1}")){
             final Location playerLookLocation = CommandUtil.getPlayerLookBlockPos((Player) sender);
-            list.add(""+ playerLookLocation.getBlockY());
+            list.add(""+ playerLookLocation.getY());
             return list;
         }
-        else if (cmdS.matches("/calibratemusic (-?(\\d)+ ){2}")){
+        else if (cmdS.matches("/calibratemusic (-?(\\d)+(.\\d+)? ){2}")){
             final Location playerLookLocation = CommandUtil.getPlayerLookBlockPos((Player) sender);
-            list.add(""+ playerLookLocation.getBlockZ());
+            list.add(""+ playerLookLocation.getZ());
             return list;
         }
         else return Collections.emptyList();
