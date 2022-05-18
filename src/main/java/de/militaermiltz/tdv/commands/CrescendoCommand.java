@@ -1,6 +1,7 @@
 package de.militaermiltz.tdv.commands;
 
 import de.militaermiltz.tdv.util.Direction;
+import de.militaermiltz.tdv.util.HomogenTuple;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -38,14 +39,14 @@ public class CrescendoCommand implements CommandExecutor, TabCompleter {
             Location startLoc = new Location(world, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
             Location endLoc = new Location(world, Integer.parseInt(args[3]), Integer.parseInt(args[1]), Integer.parseInt(args[4]));
 
-            final Location[] alignedLoc = CommandUtil.transformLocation(startLoc, endLoc);
+            final HomogenTuple<Location> alignedLoc = CommandUtil.transformLocation(startLoc, endLoc);
             if (!dir.isPointingNegative()){
-                startLoc = alignedLoc[0];
-                endLoc = alignedLoc[1];
+                startLoc = alignedLoc.getKey();
+                endLoc = alignedLoc.getValue();
             }
             else{
-                startLoc = alignedLoc[1];
-                endLoc = alignedLoc[0];
+                startLoc = alignedLoc.getValue();
+                endLoc = alignedLoc.getKey();
             }
 
             final double anzCom = calculateAnzCom(world, startLoc, endLoc, dir);

@@ -50,10 +50,10 @@ public class CommandUtil {
     /**
      * Align from- and to Location to xyz coordinates
      */
-    public static Location[] transformLocation(Location from, Location to){
+    public static HomogenTuple<Location> transformLocation(Location from, Location to){
         final Location newFrom = new Location(from.getWorld(), Math.min(from.getBlockX(), to.getBlockX()), Math.min(from.getBlockY(), to.getBlockY()), Math.min(from.getBlockZ(), to.getBlockZ()));
         final Location newToo = new Location(from.getWorld(), Math.max(from.getBlockX(), to.getBlockX()), Math.max(from.getBlockY(), to.getBlockY()), Math.max(from.getBlockZ(), to.getBlockZ()));
-        return new Location[]{newFrom, newToo};
+        return new HomogenTuple<>(newFrom, newToo);
     }
 
     /**

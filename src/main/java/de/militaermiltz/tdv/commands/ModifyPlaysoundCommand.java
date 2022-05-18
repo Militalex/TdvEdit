@@ -1,5 +1,8 @@
 package de.militaermiltz.tdv.commands;
 
+import de.militaermiltz.tdv.commands.util.ShowPlaysoundTickable;
+import de.militaermiltz.tdv.util.Dynamic;
+import de.militaermiltz.tdv.util.HomogenTuple;
 import de.militaermiltz.tdv.util.NumberUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -30,15 +33,18 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
         if (!isComplete(sender, args)) return false;
 
         final World world = (args.length == 9) ? Bukkit.getServer().getWorld(args[8]) : CommandUtil.getWorldFromSender(sender);
-        final Location[] fromTo = CommandUtil.transformLocation(new Location(world, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2])),
+        final HomogenTuple<Location> fromTo = CommandUtil.transformLocation(new Location(world, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2])),
                                                     new Location(world, Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5])));
+
+        final Location from = fromTo.getKey();
+        final Location to = fromTo.getValue();
 
         //Count modified command Blocks
         int modified = 0;
 
-        for (int x = fromTo[0].getBlockX(); x <= fromTo[1].getBlockX(); x++) {
-            for (int y = fromTo[0].getBlockY(); y <= fromTo[1].getBlockY(); y++) {
-                for (int z = fromTo[0].getBlockZ(); z <= fromTo[1].getBlockZ(); z++) {
+        for (int x = from.getBlockX(); x <= to.getBlockX(); x++) {
+            for (int y = from.getBlockY(); y <= to.getBlockY(); y++) {
+                for (int z = from.getBlockZ(); z <= to.getBlockZ(); z++) {
                     assert world != null;
                     final Block block = world.getBlockAt(x, y, z);
 

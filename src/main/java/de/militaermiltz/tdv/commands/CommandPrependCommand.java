@@ -1,5 +1,6 @@
 package de.militaermiltz.tdv.commands;
 
+import de.militaermiltz.tdv.util.HomogenTuple;
 import de.militaermiltz.tdv.util.RegexUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -36,15 +37,18 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
         String filter = getFilter(commandString);
 
         final World world = CommandUtil.getWorldFromSender(sender);
-        final Location[] fromTo = CommandUtil.transformLocation(new Location(world, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2])),
+        final HomogenTuple<Location> fromTo = CommandUtil.transformLocation(new Location(world, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2])),
                                                                 new Location(world, Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5])));
+
+        final Location from = fromTo.getKey();
+        final Location to = fromTo.getValue();
 
         //Count how many cmd-Blocks are modified
         int modified = 0;
 
-        for (int x = fromTo[0].getBlockX(); x <= fromTo[1].getBlockX(); x++) {
-            for (int y = fromTo[0].getBlockY(); y <= fromTo[1].getBlockY(); y++) {
-                for (int z = fromTo[0].getBlockZ(); z <= fromTo[1].getBlockZ(); z++) {
+        for (int x = from.getBlockX(); x <= to.getBlockX(); x++) {
+            for (int y = from.getBlockY(); y <= to.getBlockY(); y++) {
+                for (int z = from.getBlockZ(); z <= to.getBlockZ(); z++) {
                     final Block block = world.getBlockAt(x, y, z);
 
                     if (block.getState() instanceof CommandBlock) {
@@ -52,13 +56,13 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                         String cmd = ((CommandBlock) block.getState()).getCommand();
 
                         //Remove "/"
-                        if (cmd.charAt(0) == '/') {
+                        if (cmd.length() != 0 && cmd.charAt(0) == '/') {
                             cmd = cmd.replaceFirst("/", "");
                         }
 
                         if (filter.equals("")){
                             //Prepends the arg String without "
-                            cmd = prependString.substring(1, prependString.length() - 1) + " " + cmd;
+                            cmd = prependString.substring(1, prependString.length() - 1) + ((cmd.length() != 0) ? " " : "") + cmd;
 
                             CommandUtil.setCMDinBlock(block, cmd);
                             modified++;
@@ -66,38 +70,12 @@ public class CommandPrependCommand implements CommandExecutor, TabCompleter {
                         else {
                             if (cmd.split(" ")[0].equals(filter)) {
                                 //Prepends the arg String without "
-                                cmd = prependString.substring(1, prependString.length() - 1) + " " + cmd;
+                                cmd = prependString.substring(1, prependString.length() - 1) + ((cmd.length() != 0) ? " " : "") + cmd;
 
                                 CommandUtil.setCMDinBlock(block, cmd);
                                 modified++;
                             }
                         }
-
-                        //Length is 8 when command filter is applied
-                        /*if (args.length == 8) {
-                            String argument = args[7];
-
-                            //Remove "/"
-                            if (argument.charAt(0) == '/') {
-                                argument = argument.replaceFirst("/", "");
-                            }
-
-                            //If command equals filter
-                            if (cmd.split(" ")[0].equals(argument)) {
-                                //Prepends the arg String without "
-                                cmd = args[6].substring(1, args[6].length() - 1) + " " + cmd;
-
-                                CommandUtil.setCMDinBlock(block, cmd);
-                                modified++;
-                            }
-                        }
-                        else{
-                            //Prepends the arg String without "
-                            cmd = args[6].substring(1, args[6].length() - 1) + " " + cmd;
-
-                            CommandUtil.setCMDinBlock(block, cmd);
-                            modified++;
-                        }*/
                     }
                 }
             }
