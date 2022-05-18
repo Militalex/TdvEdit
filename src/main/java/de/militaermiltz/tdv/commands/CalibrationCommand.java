@@ -70,15 +70,14 @@ public class CalibrationCommand implements CommandExecutor, TabCompleter {
         final List<NBTFile> nbtFiles = structureFiles.stream().map(path -> {
             try {
                 return new NBTFile(path.toFile());
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 TdvEdit.PLUGIN.getLogger().log(Level.SEVERE, "An error occurred by loading structure Files.", e);
                 sender.sendMessage(ChatColor.RED + "An error occurred by loading structure Files.");
                 throw new RuntimeException(e);
             }
-        }).collect(Collectors.toList());
+        }).toList();
 
-        //NBTFile manipulkation
+        //NBTFile manipulation
         nbtFiles.stream().map(nbtFile -> nbtFile.getCompoundList("blocks"))
         .forEach(nbtListCompounds ->
                 nbtListCompounds.stream()
@@ -91,7 +90,7 @@ public class CalibrationCommand implements CommandExecutor, TabCompleter {
                     String cmd = nbtCompound.getString("Command");
 
                     //Remove "/"
-                    if (cmd.charAt(0) == '/') {
+                    if (!cmd.equals("") && cmd.charAt(0) == '/') {
                         cmd = cmd.replaceFirst("/", "");
                     }
 
