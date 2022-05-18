@@ -1,8 +1,8 @@
 name: TdvEdit
 version: ${project.version}
 main: de.militaermiltz.tdv.TdvEdit
-api-version: 1.16
-authors: [ MilitaerMilitz ]
+api-version: 1.17
+authors: [ Militalex ]
 description: This plugin adds Commands to the game helping build tdv music.
 depend:
   - NBTAPI
@@ -37,4 +37,14 @@ commands:
     description: Calibrate Music to an specific location.
     usage: Right usage -> /calibratemusic <x, y, z> <String Music Patterns starts with>
     permission: tdvEdit.calibratemusic
+    permission-message: You don't have the permission to do that.
+  modifycommandblockstates:
+    description: Can modify commandblock BlockStates.
+    usage: Right usage -> /modifycommandblockstates <from> <to> <change to BlockState -> [cb (normal commandblock) | rcb (repeating commandblock) | ccb (chain commandblock) | conditional | unconditional | needsRedstone | alwaysActive]>
+    permission: tdvEdit.modifycommandblockstates
+    permission-message: You don't have the permission to do that.
+  showplaysoundstats:
+    description: Shows playsound stats.
+    usgae: Right usage -> /showplaysoundstats
+    permission: tdvEdit.showplaysoundstats
     permission-message: You don't have the permission to do that.
