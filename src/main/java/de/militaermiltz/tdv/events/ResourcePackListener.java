@@ -1,8 +1,10 @@
 package de.militaermiltz.tdv.events;
 
+import de.militaermiltz.tdv.TdvEdit;
 import de.militaermiltz.tdv.util.FileUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,7 +18,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  *
@@ -33,10 +34,11 @@ public class ResourcePackListener implements Listener {
         final Path pack = Paths.get("plugins/TdvEdit/pack.txt");
         FileUtil.createIfNotExists(pack);
 
+
         //Get Pack info from server.properties
         final String[] packInfo;
         try {
-            packInfo = getPackFromServerProperties();
+            packInfo = getPackFromServerConfig();
         }
         catch (IOException ioException) {
             player.sendMessage(ChatColor.RED + "Cannot get Pack Info from server.properties.");
@@ -94,7 +96,7 @@ public class ResourcePackListener implements Listener {
         //Check if player Name is not in pack.txt
         if (!packContent.contains(player.getName())){
             Bukkit.getServer().dispatchCommand(player, "tellraw @s [\"\"," +
-                    "{\"text\":\"The server resource pack has been changed. Click here to download the newest version and load it manually.\",\"color\":\"red\"}," +
+                    "{\"text\":\"The animation pack has been changed. Click here to download the newest version and load it manually.\",\"color\":\"red\"}," +
                     "{\"text\":\"\\n\"},{\"text\":\"< Download >\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"" + packInfo[0]+ "\"}}]");
 
             //Add player Name to pack.txt List (Mark player as seen).
@@ -111,7 +113,7 @@ public class ResourcePackListener implements Listener {
         else {
             //If player is in pack.txt
             Bukkit.getServer().dispatchCommand(player, "tellraw @s [\"\"," +
-                    "{\"text\":\"The server resource pack is available here:\",\"color\":\"light_purple\"}," +
+                    "{\"text\":\"Note that the server resourcepack is not complete. You find the animation Pack here:\",\"color\":\"light_purple\"}," +
                     "{\"text\":\"\\n\"},{\"text\":\"< Click here to download >\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"" + packInfo[0]+ "\"}}]");
 
         }
@@ -121,22 +123,12 @@ public class ResourcePackListener implements Listener {
      * Extracts server resourcePack information from server.properties
      * @throws IOException if an I/O error occurs opening source.
      */
-    private static String[] getPackFromServerProperties() throws IOException {
-        final Path path = Paths.get("server.properties");
+    private static String[] getPackFromServerConfig() throws IOException {
+        final FileConfiguration config = TdvEdit.PLUGIN.getConfig();
         final String[] packInfo = new String[2];
-        final Scanner sc = new Scanner(path);
 
-        while (sc.hasNext()){
-            final String str = sc.nextLine();
-            final String[] prop = str.split("=");
-
-            if (prop[0].equals("resource-pack") && prop.length > 1){
-                packInfo[0] = prop[1].replace("\\:", ":");
-            }
-            else if (prop[0].equals("resource-pack-sha1") && prop.length > 1){
-                packInfo[1] = prop[1];
-            }
-        }
+        packInfo[0] = config.getString("Packlink");
+        packInfo[1] = config.getString("SHA-1");
 
         return packInfo;
     }

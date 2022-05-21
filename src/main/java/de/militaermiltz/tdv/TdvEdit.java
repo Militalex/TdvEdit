@@ -40,7 +40,7 @@ public final class TdvEdit extends JavaPlugin {
         }
 
         PLUGIN = this;
-        final boolean resources = this.getConfig().getBoolean("resourcepack");
+        final int pack = this.getConfig().getInt("PackBehave");
 
         //Commands
         Objects.requireNonNull(getCommand("modifyplaysound")).setExecutor(new ModifyPlaysoundCommand());
