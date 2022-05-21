@@ -19,6 +19,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ *
+ * @author Alexander Ley
+ * @version 1.1
+ *
+ * This class defines crescendo command to add (de-)crescendos on Minecraft playsound commands.
+ *
+ */
 public class CrescendoCommand implements CommandExecutor, TabCompleter {
 
     @Override
@@ -152,14 +160,14 @@ public class CrescendoCommand implements CommandExecutor, TabCompleter {
             return list;
         }
         else if (cmdS.matches("/crescendo (-?(\\d)+ ){5}")){
-            list.addAll(Arrays.stream(Direction.values()).map(Enum::toString).collect(Collectors.toList()));
+            list.addAll(Arrays.stream(Direction.values()).map(Enum::toString).toList());
             return list;
         }
-        else if (cmdS.matches("/crescendo (-?(\\d)+ ){5}(SOUTH|NORTH|WEST|EAST) ")){
+        else if (cmdS.matches("/crescendo (-?(\\d)+ ){5}(South|North|West|East) ")){
             list.add("0.0");
             return list;
         }
-        else if (cmdS.matches("/crescendo (-?(\\d)+ ){5}(SOUTH|NORTH|WEST|EAST) ((\\d)+.(\\d)+) ")){
+        else if (cmdS.matches("/crescendo (-?(\\d)+ ){5}(South|North|West|East) ((\\d)+|((\\d)+.(\\d)+)) ((\\d)+|((\\d)+.(\\d)+)) ")){
             list.add("1.0");
             return list;
         }
@@ -167,7 +175,7 @@ public class CrescendoCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean isCorrect(String command){
-        return command.matches("/crescendo (-?(\\d)+ ){5}(SOUTH|NORTH|WEST|EAST) ((\\d)+.(\\d)+) ((\\d)+.(\\d)+)");
+        return command.matches("/crescendo (-?(\\d)+ ){5}(South|North|West|East) ((\\d)+|((\\d)+.(\\d)+)) ((\\d)+|((\\d)+.(\\d)+))");
     }
 
     private int calculateAnzCom(World world, Location startLoc, Location endLoc, Direction dir){

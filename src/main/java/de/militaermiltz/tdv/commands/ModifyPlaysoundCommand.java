@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  *
  * @author Alexander Ley
- * @version 1.0
+ * @version 1.1
  *
  * This class defines /modifyplaysound command
  *
@@ -100,7 +100,7 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
                                 cmdArgs.set(6, args[9]);
                             }
                             else {
-                                cmdArgs.set(argIndex, args[7]);
+                                cmdArgs.set(argIndex, (argIndex == 7 && !NumberUtil.isNumber(args[7])) ?  "" + Dynamic.valueOf(args[7]).getVolume() : args[7]);
                             }
 
 
@@ -166,12 +166,12 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
             case 9:
             case 10:
                 if (PlaysoundArguments.getFromString(args[6]) != PlaysoundArguments.POS) {
-                    list.addAll(Bukkit.getServer().getWorlds().stream().map(World::getName).collect(Collectors.toList()));
+                    list.addAll(Bukkit.getServer().getWorlds().stream().map(World::getName).toList());
                 }
                 break;
             case 11:
                 if (PlaysoundArguments.getFromString(args[6]) == PlaysoundArguments.POS) {
-                    list.addAll(Bukkit.getServer().getWorlds().stream().map(World::getName).collect(Collectors.toList()));
+                    list.addAll(Bukkit.getServer().getWorlds().stream().map(World::getName).toList());
                 }
                 break;
         }
@@ -261,15 +261,15 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
         SOUND(1, Arrays.stream(Sound.values())
                       .map(sound -> sound.getKey().toString())
                       .collect(Collectors.toList()),
-              s -> true, "-sound", "-sou"),
+              s -> true, "-sound"),
         CATEGORY(2, Arrays.stream(SoundCategory.values())
                          .map(soundCategory -> soundCategory.toString().toLowerCase())
                          .collect(Collectors.toList()),
                  s -> Arrays.stream(SoundCategory.values())
                     .map(soundCategory -> soundCategory.toString().toLowerCase())
                     .anyMatch(s1 -> s1.equals(s)),
-                 "-category", "-cat"),
-        SELECTOR(3, Arrays.asList("@a", "@p", "@s", "@a[distance=..10]"), ModifyPlaysoundCommand::isSelector, "-selector", "-sel"),
+                 "-category"),
+        SELECTOR(3, Arrays.asList("@a", "@p", "@s", "@a[distance=..10]"), ModifyPlaysoundCommand::isSelector, "-selector"),
         POS(4, new ArrayList<>(Collections.singleton("~ ~ ~")), s -> {
             final Scanner scanner = new Scanner(s);
 
@@ -280,9 +280,13 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
             }
             return true;
         }, "-pos"),
-        VOLUME(7, Collections.emptyList(), NumberUtil::isNumber, "-volume", "-v"),
-        PITCH(8, Collections.emptyList(), NumberUtil::isNumber,"-pitch", "-p"),
-        MIN_VOLUME(9, Collections.emptyList(), NumberUtil::isNumber,"-minVolume", "-minv");
+        VOLUME(7, Dynamic.getStringValues() , s ->
+                NumberUtil.isNumber(s) || Arrays.stream(Dynamic.values())
+                        .map(Objects::toString).toList()
+                        .contains(s)
+                , "-volume"),
+        PITCH(8, Collections.emptyList(), NumberUtil::isNumber,"-pitch"),
+        MIN_VOLUME(9, Collections.emptyList(), NumberUtil::isNumber,"-minVolume");
 
         private final String[] alias;
         private final Predicate<String> correctPredicate;
@@ -303,7 +307,9 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
             FILTER.addAll(Arrays.asList(alias));
         }
 
-        //This method loads all information in this enum.
+        /**
+         * This method loads all information in this enum.
+         */
         public static void init(){
 
         }
@@ -314,8 +320,7 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
         public static @Nullable
         PlaysoundArguments getFromString(String str){
             final List<PlaysoundArguments> list = Arrays.stream(values())
-                    .filter(playsoundArguments -> playsoundArguments.isInAlias(str))
-                    .collect(Collectors.toList());
+                    .filter(playsoundArguments -> playsoundArguments.isInAlias(str)).toList();
             //assert list.size() == 1;
             if (list.isEmpty()) return null;
             return list.get(0);
@@ -334,6 +339,10 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
         }
 
         public List<String> getTabList(CommandSender sender){
+            if (this == VOLUME){
+                tabList.add("1.0");
+                return tabList;
+            }
             if (this != POS) return tabList;
 
             final Location location = (sender instanceof Player) ? CommandUtil.getPlayerLookBlockPos((Player) sender) :
