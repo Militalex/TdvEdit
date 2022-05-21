@@ -29,6 +29,12 @@ public enum Direction {
         this.relVecZ = relVecZ;
     }
 
+    @Override
+    public String toString() {
+        final String old = super.toString();
+        return "" + old.charAt(0) + old.substring(1).toLowerCase();
+    }
+
     /**
      * Parse Direction from Location.
      */
@@ -68,36 +74,36 @@ public enum Direction {
      * Get the yaw in degrees the direction is pointing to.
      */
     public float getYaw(){
-        switch (this){
-            case NORTH: return 180;
-            case EAST: return 270;
-            case SOUTH: return 0;
-            default: return 90;
-        }
+        return switch (this) {
+            case NORTH -> 180;
+            case EAST -> 270;
+            case SOUTH -> 0;
+            default -> 90;
+        };
     }
 
     /**
      * @return Returns opposite Direction.
      */
     public Direction getOpposite(){
-        switch (this){
-            case NORTH: return SOUTH;
-            case SOUTH: return NORTH;
-            case EAST: return WEST;
-            default: return EAST;
-        }
+        return switch (this) {
+            case NORTH -> SOUTH;
+            case SOUTH -> NORTH;
+            case EAST -> WEST;
+            default -> EAST;
+        };
     }
 
     /**
      * @return Returns Direction 90 degrees rotated.
      */
     public Direction rotate90(){
-        switch (this){
-            case NORTH: return WEST;
-            case WEST: return SOUTH;
-            case SOUTH: return EAST;
-            default: return NORTH;
-        }
+        return switch (this) {
+            case NORTH -> WEST;
+            case WEST -> SOUTH;
+            case SOUTH -> EAST;
+            default -> NORTH;
+        };
     }
 
     /**
@@ -155,13 +161,10 @@ public enum Direction {
      * This Predicate is optimised to use in a for loop.
      */
     public Predicate<Double> getRelXTestPredicate(Location location){
-        switch (this){
-            case EAST:
-            case WEST:
-                return integer -> (this.getRelVecX().getBlockZ() < 0) ? integer < location.getBlockX() : integer > location.getBlockX();
-            default:
-                return integer -> (this.getRelVecX().getBlockX() >= 0) ? integer < location.getBlockX() : integer > location.getBlockX();
-        }
+        return switch (this) {
+            case EAST, WEST -> integer -> (this.getRelVecX().getBlockZ() < 0) ? integer < location.getBlockX() : integer > location.getBlockX();
+            default -> integer -> (this.getRelVecX().getBlockX() >= 0) ? integer < location.getBlockX() : integer > location.getBlockX();
+        };
     }
 
     /**
@@ -179,13 +182,10 @@ public enum Direction {
      * This Predicate is optimised to use in a for loop.
      */
     public Predicate<Double> getRelZTestPredicate(Location location){
-        switch (this){
-            case EAST:
-            case WEST:
-                return integer -> (this.getRelVecZ().getBlockX() < 0) ? integer < location.getBlockZ() : integer > location.getBlockZ();
-            default:
-                return integer -> (this.getRelVecZ().getBlockZ() >= 0) ? integer < location.getBlockZ() : integer > location.getBlockZ();
-        }
+        return switch (this) {
+            case EAST, WEST -> integer -> (this.getRelVecZ().getBlockX() < 0) ? integer < location.getBlockZ() : integer > location.getBlockZ();
+            default -> integer -> (this.getRelVecZ().getBlockZ() >= 0) ? integer < location.getBlockZ() : integer > location.getBlockZ();
+        };
     }
 
     /**
@@ -193,13 +193,10 @@ public enum Direction {
      * (^operand ^ ^)
      */
     public Function<Double, Double> increaseInRelX(double operand){
-        switch (this){
-            case EAST:
-            case WEST:
-                return pos -> (this.getRelVecX().getBlockZ() < 0) ? pos += operand : (pos -= operand);
-            default:
-                return pos -> (this.getRelVecX().getBlockX() >= 0) ? pos += operand : (pos -= operand);
-        }
+        return switch (this) {
+            case EAST, WEST -> pos -> (this.getRelVecX().getBlockZ() < 0) ? pos += operand : (pos -= operand);
+            default -> pos -> (this.getRelVecX().getBlockX() >= 0) ? pos += operand : (pos -= operand);
+        };
     }
 
     /**
@@ -215,13 +212,10 @@ public enum Direction {
      * (^ ^ ^operand)
      */
     public Function<Double, Double> increaseInRelZ(double operand){
-        switch (this){
-            case EAST:
-            case WEST:
-                return pos -> (this.getRelVecZ().getBlockX() < 0) ? pos += operand : (pos -= operand);
-            default:
-                return pos -> (this.getRelVecZ().getBlockZ() >= 0) ? pos += operand : (pos -= operand);
-        }
+        return switch (this) {
+            case EAST, WEST -> pos -> (this.getRelVecZ().getBlockX() < 0) ? pos += operand : (pos -= operand);
+            default -> pos -> (this.getRelVecZ().getBlockZ() >= 0) ? pos += operand : (pos -= operand);
+        };
     }
 
     /**
