@@ -14,6 +14,10 @@ public abstract class BukkitTickable {
     private final Plugin plugin;
     private boolean started = false;
 
+    /**
+     * Constructor
+     * @param plugin is needed to use Bukkit.getScheduler.runTaskTimer(plugin, ...)
+     */
     protected BukkitTickable(Plugin plugin) {
         this.plugin = plugin;
     }
