@@ -1,16 +1,16 @@
 package de.militaermiltz.tdv;
 
 import de.militaermiltz.tdv.commands.*;
+import de.militaermiltz.tdv.commands.util.ShowPlaysoundTickable;
+import de.militaermiltz.tdv.events.GeneralListener;
 import de.militaermiltz.tdv.events.ResourcePackListener;
 import de.militaermiltz.tdv.util.ServerPropertiesManager;
-import de.tr7zw.nbtapi.NBTCompound;
-import de.tr7zw.nbtapi.NBTCompoundList;
-import de.tr7zw.nbtapi.NBTFile;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -49,6 +49,9 @@ public final class TdvEdit extends JavaPlugin {
         Objects.requireNonNull(getCommand("resourcepack")).setExecutor(new ResourcePackCommand());
         Objects.requireNonNull(getCommand("givenote")).setExecutor(new GiveNoteCommand());
         Objects.requireNonNull(getCommand("calibratemusic")).setExecutor(new CalibrationCommand());
+        Objects.requireNonNull(getCommand("modifycommandblockstates")).setExecutor(new ModifyCommandblockStatesCommand());
+        Objects.requireNonNull(getCommand("showplaysoundstats")).setExecutor(new ShowPlaysoundCommand());
+
 
         //Events
         if (resources) getServer().getPluginManager().registerEvents(new ResourcePackListener(), this);

@@ -125,7 +125,12 @@ public class ModifyPlaysoundCommand implements CommandExecutor, TabCompleter {
             }
         }
         if (modified == 0) sender.sendMessage(ChatColor.RED + "No commands to modify.");
-        else sender.sendMessage("" + ChatColor.RED + modified + ChatColor.GOLD + " command(s) are modified.");
+        else {
+            if (ShowPlaysoundTickable.exists()) {
+                Bukkit.dispatchCommand(sender, "kill @e[type=armor_stand,tag=tdvedit_visualizer]");
+            }
+            sender.sendMessage("" + ChatColor.RED + modified + ChatColor.GOLD + " command(s) are modified.");
+        }
 
         return true;
     }

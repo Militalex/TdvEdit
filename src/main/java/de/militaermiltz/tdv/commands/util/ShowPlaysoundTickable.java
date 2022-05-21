@@ -5,7 +5,6 @@ import de.militaermiltz.tdv.commands.CommandUtil;
 import de.militaermiltz.tdv.util.BukkitTickable;
 import de.militaermiltz.tdv.util.ExLocation;
 import de.militaermiltz.tdv.util.HomogenTuple;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,7 +25,7 @@ import java.util.function.Predicate;
 /**
  *
  * @author Alexander Ley
- * @version 1.0
+ * @version 1.5
  *
  * This singleton class includes the playsound visualization magic.
  * This Tickable manages itself automatically. Starting and Stopping manually via Bukkit
@@ -46,13 +45,18 @@ public class ShowPlaysoundTickable extends BukkitTickable {
     // Singleton Pattern
 
     /**
+     * Contains all summoned Armorstands
+     */
+    public static final List<ArmorStand> armorStands = new ArrayList<>();
+
+    /**
      * Predicate object to identify if entity belong to playsound visualization engine.
      */
     public static final Predicate<Entity> isPlaysoundShower = entity ->
-            entity instanceof ArmorStand && entity.getScoreboardTags().contains("tdvEdit_visualizer");
+            entity instanceof ArmorStand && armorStands.contains(entity);
 
     /**
-     * Shutdwon tickable
+     * Shutdown tickable
      */
     public static void staticStop(){
         if (exists() && tickable.getStarted()){
@@ -68,14 +72,14 @@ public class ShowPlaysoundTickable extends BukkitTickable {
     }
 
     /**
-     * Marks tickable to refresh armorstands when perfoming next tick.
-     */
-    private boolean isDirty = false;
-
-    /**
      * Contains all visualizing players.
      */
     private final List<Player> playerList = new ArrayList<>();
+
+    /**
+     * Contains information which players armorstand should be refreshed
+     */
+    private final List<Player> dirtyPlayers = new ArrayList<>();
 
     /**
      * Private constructor for Singleton Pattern
@@ -110,11 +114,11 @@ public class ShowPlaysoundTickable extends BukkitTickable {
     }
 
     /**
-     * Marks that armorstand should be refreshed and executes next tick immediately.
+     * Mark player that his armorstands should refresh
      */
-    public void markDirty(){
-        isDirty = true;
-        tick();
+    public void setPlayerDirty(Player player){
+        if (!playerList.contains(player)) return;
+        dirtyPlayers.add(player);
     }
 
     /**
@@ -122,8 +126,8 @@ public class ShowPlaysoundTickable extends BukkitTickable {
      */
     @Override
     public void tick() {
-        // Contains all currently armorstands which are in players environment.
-        final ArrayList<Entity> actStandList = new ArrayList<>();
+        // Contains information about places armorstand should stay alive
+        final List<BoundingBox> boxes = new ArrayList<>(playerList.size());
 
         playerList.forEach(player -> {
             final Location ploc = player.getLocation();
@@ -146,15 +150,40 @@ public class ShowPlaysoundTickable extends BukkitTickable {
                 }
             }
 
-            // add surrounded armorstands
-            actStandList.addAll(player.getWorld().getNearbyEntities(new BoundingBox(ploc.getBlockX() - 10, ploc.getBlockY() - 4, ploc.getBlockZ() - 10,
-                    ploc.getBlockX() + 10, ploc.getBlockY() + 4, ploc.getBlockZ() + 10), isPlaysoundShower));
+            boxes.add(new BoundingBox(ploc.getBlockX() - 10, ploc.getBlockY() - 4, ploc.getBlockZ() - 10,
+                    ploc.getBlockX() + 10, ploc.getBlockY() + 4, ploc.getBlockZ() + 10));
+
+            // refresh players armorstands
+            if (dirtyPlayers.contains(player)){
+                dirtyPlayers.remove(player);
+                armorStands.stream()
+                        .filter(armorStand ->
+                                armorStand.getBoundingBox().overlaps(new BoundingBox(ploc.getBlockX() - 8,
+                                ploc.getBlockY() - 8, ploc.getBlockZ() - 8, ploc.getBlockX() + 8,
+                                ploc.getBlockY() + 8, ploc.getBlockZ() + 8)))
+                        .forEach(armorStand ->
+                            armorStand.setCustomName(getSoundDataString(player, armorStand.getLocation().getBlock().getState(), false))
+                        );
+            }
         });
 
-        // Kill armorstands which are outside or kill all if algorithm should spawn it new
-        Bukkit.getWorlds().forEach(world -> world.getEntities().stream().filter(isPlaysoundShower).filter(entity ->
-                !actStandList.contains(entity) || isDirty).forEach(Entity::remove));
-        isDirty = false;
+        // Kill armorstands which are outside
+        armorStands.stream()
+            .filter(armorStand -> {
+                if (armorStand.isDead()) return true;
+
+                // kill if no command or noteblock
+                final BlockState entSta = armorStand.getLocation().getBlock().getState();
+                if (!(entSta instanceof CommandBlock || entSta.getType() == Material.NOTE_BLOCK)) return true;
+
+                // kill if outside of range
+                for (BoundingBox box : boxes) {
+                    if (armorStand.getBoundingBox().overlaps(box)){
+                        return false;
+                    }
+                }
+                return true;
+            }).peek(armorStands::remove).forEach(Entity::remove);
     }
 
     /**
@@ -167,8 +196,7 @@ public class ShowPlaysoundTickable extends BukkitTickable {
 
         playerList.forEach(playerList::remove);
 
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kill " +
-                "@e[type=minecraft:armor_stand,tag=tdvEdit_visualizer]");
+        armorStands.forEach(Entity::remove);
     }
 
     /**
@@ -180,56 +208,71 @@ public class ShowPlaysoundTickable extends BukkitTickable {
     private void tryVisualize(Player player, Location location){
         final BlockState wildState = location.getBlock().getState();
 
-        // save booleans to use it later
-        boolean isCb, isNb, isPlaysound = false;
-
         // if block is commandblock or noteblock
-        if ((isCb = wildState instanceof CommandBlock) | (isNb = wildState.getBlockData().getMaterial() == Material.NOTE_BLOCK)){
+        if (wildState instanceof CommandBlock | wildState.getBlockData().getMaterial() == Material.NOTE_BLOCK){
             //calculate possible visualization armorstands
             final Collection<Entity> stands = location.getWorld().getNearbyEntities(new BoundingBox(location.getBlockX(), location.getBlockY(),
                             location.getBlockZ(),location.getBlockX() + 1.0, location.getBlockY() + 1.0,
                     location.getBlockZ() + 1.0), isPlaysoundShower);
 
-            // if commandblock/noteblock has no visualization armorstand
-            if (stands.isEmpty()){
-                String data = "";
+            // if commandblock/noteblock has no visualization armorstand and block has music data
+            if (stands.isEmpty() && hasSoundData(player, wildState)){
+                final String data = getSoundDataString(player, wildState, true);
 
-                // Build commandblock playsound data String
-                if (isCb && (isPlaysound = CommandUtil.isCommandWithPlaysound(player, (CommandBlock)wildState))){
-                    final HomogenTuple<Double> volpitch = CommandUtil.extractVolumePitch((CommandBlock)wildState);
-                    final double volume = volpitch.getKey();
-                    final double pitch = volpitch.getValue();
-                    final String note = CommandUtil.getNoteFromPitch(pitch);
+                final ArmorStand stand = (ArmorStand) location.getWorld().spawnEntity(new Location(location.getWorld(),
+                        location.getBlockX() + 0.5, location.getBlockY(), location.getBlockZ() + 0.5), EntityType.ARMOR_STAND);
+                stand.setCustomNameVisible(true);
+                stand.setGravity(false);
+                stand.setSilent(true);
+                stand.setInvulnerable(true);
+                stand.setSmall(true);
+                stand.setInvisible(true);
+                stand.setBasePlate(false);
+                stand.setPersistent(true);
+                stand.setCustomName(data);
+                stand.addScoreboardTag("tdvedit_visualizer");
 
-                    data = "" + ChatColor.LIGHT_PURPLE + volume + " " + ChatColor.GOLD +
-                            pitch + ((note.equals("")) ? "" : ChatColor.AQUA + "/" + note);
-                }
-
-                // Build noteblock playsound data String
-                if (isNb){
-                    final int clicks = Integer.parseInt(CommandUtil.getBlockStates(wildState).get("note"));
-                    final String note = CommandUtil.getNoteFromPitch(CommandUtil.getPitchFromClicks((clicks)));
-
-                    data = "" + ChatColor.GOLD +
-                            clicks + ((note.equals("")) ? "" : ChatColor.AQUA + "/" + note);
-                }
-
-                // Summon armorstand only if needed
-                if (isNb || isCb && isPlaysound) {
-                    final ArmorStand stand = (ArmorStand) location.getWorld().spawnEntity(new Location(location.getWorld(),
-                            location.getBlockX() + 0.5, location.getBlockY(), location.getBlockZ() + 0.5), EntityType.ARMOR_STAND);
-                    stand.setCustomNameVisible(true);
-                    stand.setGravity(false);
-                    stand.setSilent(true);
-                    stand.setInvulnerable(true);
-                    stand.setSmall(true);
-                    stand.setInvisible(true);
-                    stand.setBasePlate(false);
-                    stand.setPersistent(true);
-                    stand.addScoreboardTag("tdvEdit_visualizer");
-                    stand.setCustomName(data);
-                }
+                armorStands.add(stand);
             }
         }
+    }
+
+    /**
+     * Checks if block is a valid playsound commandblock or a noteblock.
+     */
+    private boolean hasSoundData(Player player, BlockState wildState){
+        return (wildState instanceof CommandBlock && CommandUtil.isCommandWithPlaysound(player, (CommandBlock)wildState))
+                || wildState.getType() == Material.NOTE_BLOCK;
+    }
+
+    /**
+     * Extracts sound data from valid (playsound) commandblock or noteblock and
+     * format it for using as CustomName.
+     * @param tested should playsound criteria be tested or not
+     * @return Return well formated sound data to use as
+     * CustomName for visualization armorstands. Returns "" if no valid data can be extracted.
+     */
+    private String getSoundDataString(Player player, BlockState wildState, boolean tested){
+        // Build commandblock playsound data String
+        if (wildState instanceof CommandBlock && (tested || CommandUtil.isCommandWithPlaysound(player, (CommandBlock)wildState))){
+            final HomogenTuple<Double> volpitch = CommandUtil.extractVolumePitch((CommandBlock)wildState);
+            final double volume = volpitch.getKey();
+            final double pitch = volpitch.getValue();
+            final String note = CommandUtil.getNoteFromPitch(pitch);
+
+            return "" + ChatColor.LIGHT_PURPLE + volume + " " + ChatColor.GOLD +
+                    pitch + ((note.equals("")) ? "" : ChatColor.AQUA + "/" + note);
+        }
+
+        // Build noteblock playsound data String
+        if (wildState.getType() == Material.NOTE_BLOCK){
+            final int clicks = Integer.parseInt(CommandUtil.getBlockStates(wildState).get("note"));
+            final String note = CommandUtil.getNoteFromPitch(CommandUtil.getPitchFromClicks((clicks)));
+
+            return "" + ChatColor.GOLD +
+                    clicks + ((note.equals("")) ? "" : ChatColor.AQUA + "/" + note);
+        }
+
+        return "";
     }
 }

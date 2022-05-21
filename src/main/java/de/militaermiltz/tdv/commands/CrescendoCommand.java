@@ -1,7 +1,9 @@
 package de.militaermiltz.tdv.commands;
 
+import de.militaermiltz.tdv.commands.util.ShowPlaysoundTickable;
 import de.militaermiltz.tdv.util.Direction;
 import de.militaermiltz.tdv.util.HomogenTuple;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -12,8 +14,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class CrescendoCommand implements CommandExecutor, TabCompleter {
 
@@ -111,7 +115,13 @@ public class CrescendoCommand implements CommandExecutor, TabCompleter {
             }
 
             if (modifiedRow == 0) sender.sendMessage(ChatColor.RED + "No commands to modify.");
-            else sender.sendMessage("" + ChatColor.RED + modfied + ChatColor.GOLD + " command(s) in " + ChatColor.RED + modifiedRow + ChatColor.GOLD + " row(s) are modified");
+            else {
+                if (ShowPlaysoundTickable.exists()) {
+                    Bukkit.dispatchCommand(sender, "kill @e[type=armor_stand,tag=tdvedit_visualizer]");
+                }
+                sender.sendMessage("" + ChatColor.RED + modfied + ChatColor.GOLD + " command(s) in " + ChatColor.RED +
+                        modifiedRow + ChatColor.GOLD + " row(s) are modified");
+            }
             return true;
         }
     }
