@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 /**
  *
  * @author Alexander Ley
- * @version 1.0
+ * @version 1.1
  *
  * This class is a Listener for several events collected here.
  *
@@ -25,9 +25,11 @@ public class GeneralListener implements Listener {
     @SuppressWarnings("ConstantConditions")
     @EventHandler
     public void onInteract(PlayerInteractEvent event){
-        final BlockState wildState = event.getClickedBlock().getState();
-        if (event.hasBlock() && (wildState instanceof CommandBlock || wildState.getType() == Material.NOTE_BLOCK)  && ShowPlaysoundTickable.exists()){
-            ShowPlaysoundTickable.getInstance().setPlayerDirty(event.getPlayer());
+        if (event.hasBlock()) {
+            final BlockState wildState = event.getClickedBlock().getState();
+            if ((wildState instanceof CommandBlock || wildState.getType() == Material.NOTE_BLOCK) && ShowPlaysoundTickable.exists()) {
+                ShowPlaysoundTickable.getInstance().setPlayerDirty(event.getPlayer());
+            }
         }
     }
 

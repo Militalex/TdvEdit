@@ -168,22 +168,28 @@ public class ShowPlaysoundTickable extends BukkitTickable {
         });
 
         // Kill armorstands which are outside
-        armorStands.stream()
-            .filter(armorStand -> {
-                if (armorStand.isDead()) return true;
+        final List<ArmorStand> toRemove = armorStands.stream()
+                .filter(armorStand -> {
+                    if (armorStand == null || armorStand.isDead()) return true;
 
-                // kill if no command or noteblock
-                final BlockState entSta = armorStand.getLocation().getBlock().getState();
-                if (!(entSta instanceof CommandBlock || entSta.getType() == Material.NOTE_BLOCK)) return true;
+                    // kill if no command or noteblock
+                    final BlockState entSta = armorStand.getLocation().getBlock().getState();
+                    if (!(entSta instanceof CommandBlock || entSta.getType() == Material.NOTE_BLOCK)) return true;
 
-                // kill if outside of range
-                for (BoundingBox box : boxes) {
-                    if (armorStand.getBoundingBox().overlaps(box)){
-                        return false;
+                    // kill if outside of range
+                    for (BoundingBox box : boxes) {
+                        if (armorStand.getBoundingBox().overlaps(box)) {
+                            return false;
+                        }
                     }
-                }
-                return true;
-            }).peek(armorStands::remove).forEach(Entity::remove);
+                    return true;
+                })
+                .peek(stand -> {
+                    if (stand != null) stand.remove();
+                })
+                .toList();
+
+        armorStands.removeAll(toRemove);
     }
 
     /**

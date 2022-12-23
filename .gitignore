@@ -113,4 +113,3 @@ buildNumber.properties
 .flattened-pom.xml
 
 # Common working directory
-run/
