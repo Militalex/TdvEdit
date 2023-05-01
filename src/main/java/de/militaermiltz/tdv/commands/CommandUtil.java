@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.3
  *
  * This class includes some Utils used by commands.

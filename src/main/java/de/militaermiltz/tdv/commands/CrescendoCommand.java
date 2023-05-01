@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.1
  *
  * This class defines crescendo command to add (de-)crescendos on Minecraft playsound commands.

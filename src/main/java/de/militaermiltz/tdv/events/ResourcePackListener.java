@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.0
  *
  * This class defines ResourcePack Messages when player joins the world.

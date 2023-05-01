@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.5
  *
  * This singleton class includes the playsound visualization magic.

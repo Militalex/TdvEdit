@@ -1,6 +1,5 @@
 package de.militaermiltz.tdv.commands;
 
-import de.militaermiltz.tdv.TdvEdit;
 import de.militaermiltz.tdv.commands.util.ShowPlaysoundTickable;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.0
  *
  * This class defines /showlaysoundstats command

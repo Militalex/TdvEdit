@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.1
  *
  * This class is a Listener for several events collected here.

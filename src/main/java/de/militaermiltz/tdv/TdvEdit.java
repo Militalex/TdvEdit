@@ -23,7 +23,7 @@ import java.util.logging.Level;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.9
  *
  * Tdv Edit Plugin.
@@ -55,7 +55,6 @@ public final class TdvEdit extends JavaPlugin {
         Objects.requireNonNull(getCommand("crescendo")).setExecutor(new CrescendoCommand());
         Objects.requireNonNull(getCommand("resourcepack")).setExecutor(new ResourcePackCommand());
         Objects.requireNonNull(getCommand("givenote")).setExecutor(new GiveNoteCommand());
-        Objects.requireNonNull(getCommand("calibratemusic")).setExecutor(new CalibrationCommand());
         Objects.requireNonNull(getCommand("modifycommandblockstates")).setExecutor(new ModifyCommandblockStatesCommand());
         Objects.requireNonNull(getCommand("showplaysoundstats")).setExecutor(new ShowPlaysoundCommand());
 

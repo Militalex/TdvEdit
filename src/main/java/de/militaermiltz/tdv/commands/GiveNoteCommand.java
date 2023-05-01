@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.1
  *
  * This class defines givenote command to give players ability to give predefines command- and noteblocks.

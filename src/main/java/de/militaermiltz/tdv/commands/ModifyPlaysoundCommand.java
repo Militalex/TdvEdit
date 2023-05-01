@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.1
  *
  * This class defines /modifyplaysound command

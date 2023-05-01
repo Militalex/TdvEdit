@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.0
  *
  * This command defines the resource pack command which shows

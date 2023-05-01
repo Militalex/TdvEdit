@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  *
- * @author Alexander Ley
+ * @author Militalex
  * @version 1.0
  *
  * This class defines modifycommandblockstates command, which can be used to change all physical aspects of a commandblock e.g.

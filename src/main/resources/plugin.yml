@@ -34,11 +34,6 @@ commands:
     usage: Right usage -> /givenote <note as letter or noteblocks click> <optional -> standard noteblock, when used -> noteblock (nb), commandblock (cb) or repeatingCommandblock (rcb)> <if cb/rcb -> choose instrument block> <optional if cb/rcb -> standard 1.0, when used -> volume as double>
     permission: tdvEdit.givenote
     permission-message: You don't have the permission to do that.
-  calibratemusic:
-    description: Calibrate Music to an specific location.
-    usage: Right usage -> /calibratemusic <x, y, z> <String Music Patterns starts with>
-    permission: tdvEdit.calibratemusic
-    permission-message: You don't have the permission to do that.
   modifycommandblockstates:
     description: Can modify commandblock BlockStates.
     usage: Right usage -> /modifycommandblockstates <from> <to> <change to BlockState -> [cb (normal commandblock) | rcb (repeating commandblock) | ccb (chain commandblock) | conditional | unconditional | needsRedstone | alwaysActive]>
